@@ -1,1 +1,3 @@
-face_recognition/models/yolov8n-face.pt
+face_recognition/models/
+face_env
+
