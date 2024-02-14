@@ -32,10 +32,6 @@ def initialize_camera():
     # TODO: Initialize the camera and return the camera object
     pass
 
-def convert_frame_to_image_msg(frame):
-    # TODO: Convert the frame to a ROS Image message and return it
-    
-    pass
 
 if __name__ == '__main__':
     cap = cv2.VideoCapture(0)

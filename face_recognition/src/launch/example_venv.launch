@@ -1,0 +1,4 @@
+<launch>
+ <node pkg="face_recogntion" type="face_recognition.py" name="face_recognition" 
+       args="--venv $(find ros_virtual_env)/your-venv" output="screen"/>
+</launch>

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>face_recognition</name>
+  <version>0.0.1</version>
+  <description>A package for face recognition on Alter Ego</description>
+
+  <maintainer email="luca.garello@iit.it">Luca Garello</maintainer>
+  <maintainer email="linda.lastrico@iit.it">Linda Lastrico</maintainer>
+
+  <license>BSD 3-Clause License</license>
+
+  <url type="website">https://github.com/MissingSignal/EGO_face_tracker</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>sensor_msg</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>sensor_msg</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>sensor_msg</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+
+  <export>
+  </export>
+</package>
