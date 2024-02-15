@@ -51,7 +51,7 @@ def recognize_faces(camera):
         # Read a frame from the camera
         ret, frame_ = camera.read()
         if ret is False:
-            print("error")
+            print("CAN'T READ FRAME FROM CAMERA")
 
         #split the image in half horizontal wise
         # 2560x720
@@ -72,19 +72,17 @@ def recognize_faces(camera):
         pub_image.publish(image_msg)
 
         # (2) Publish detections
-        # convert results to a dictionary
-        #print(results.xyxy)
+
         # create dictionary containing results.xyxy
         dictionary = {}
         for i, detection in enumerate(results.xyxy):
             dictionary["face " + str(i) ] = detection.tolist()
-        print(dictionary)
 
-        # convert dictionary to JSON
-    
-        json_msg = json.dumps(dictionary)  # Converti il dizionario in una stringa JSON
-        pub_annotation.publish(json_msg)
-        #print(json_msg)
+        # if dictionary is not empty convert it to JSON and publish it
+        if dictionary:
+            json_msg = json.dumps(dictionary)
+            pub_annotation.publish(json_msg)
+            print(json_msg)
         rate.sleep()
 
 def main():
