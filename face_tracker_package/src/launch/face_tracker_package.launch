@@ -1,0 +1,9 @@
+<launch>
+
+ <node pkg="face_tracker_package" type="face_recognizer.py" name="face_recognizer" 
+       args="--venv $(find ros_virtual_env)/your-venv" output="screen"/>
+      
+<node pkg="face_tracker_package" type="face_tracker.py" name="face_tracker" 
+       args="--venv $(find ros_virtual_env)/your-venv" output="screen"/>
+
+</launch>

@@ -8,7 +8,8 @@ import json
 import tf
 import math
 
- #define global variable for x_error and y_error
+# define global variable for x_error and y_error
+# we update them in the tracker_callback every time we receive a new message from the face recognition node
 error_x = 0
 error_y = 0
 
@@ -20,7 +21,7 @@ def main_loop():
             listener.waitForTransform('/torso', '/head_state', rospy.Time(0), rospy.Duration(4.0))
             (trans,rot) = listener.lookupTransform('/torso','/head_state', rospy.Time(0))
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-            print("[ERROR]: Can't get the current pose.")
+            print("[ERROR]: Can't get the current head pose.")
             return
         
         # (2) compute target pose 
@@ -28,22 +29,23 @@ def main_loop():
 
         # convert rot quaternion to euler in degrees
         roll, pitch, yaw = tf.transformations.euler_from_quaternion(rot)
-        #multiply by 180/pi to convert to degrees
+        # multiply by 180/pi to convert to degrees
         roll = roll * 180 / math.pi
         pitch = pitch * 180 / math.pi
         yaw = yaw * 180 / math.pi
 
         print("CURRENT EULER (DEG): ", roll, pitch, yaw)
 
-        #define target pose: control the yaw and pitch
+        # here we define the proportional gain for the head pose control
+        # for each axis: [ target = current + Kp * error ]
         Kp = 1
-        target_yaw = yaw - (Kp * 0 )#error_x
+        target_yaw = yaw - (Kp * 0 ) #error_x
         target_pitch = pitch + (Kp * 0) #error_y 
-        target_roll = roll + (Kp * 0) # the roll is not actuated, then we force the error to be 0
+        target_roll = roll + (Kp * 0) #the roll is not actuated, then we force the error to be 0
 
         # DEFINE MAX AND MIN VALUES FOR THE HEAD POSE
-        min_pitch =  -28 #sguardo alto
-        max_pitch = 15 #sguardao basso
+        min_pitch =  -20 #limite rotazione verso alto
+        max_pitch = 15 #limite rotatazione verso basso
 
         if target_pitch > max_pitch:
             target_pitch = max_pitch
@@ -69,35 +71,25 @@ def main_loop():
         print("TARGET QUAT: ", head_pose_quat)
 
 
-        #as double check we convert the quaternion to euler again
+        # as double check we convert the quaternion to euler again
         r,p,y = tf.transformations.euler_from_quaternion(head_pose_quat)
         print("TARGET EULER (DEG): ", r*180/math.pi, p*180/math.pi, y*180/math.pi)
-            
-        #head_pose = compute_head_pose(error_x)
-
-        # (3) publish the target pose
-        #define pose placeholder
+                    
         head_pose_target = Pose()
-        # head_pose_target.orientation.x = rot[0]#head_pose_quat[0]
-        # head_pose_target.orientation.y = rot[1]#head_pose_quat[1]
-        # head_pose_target.orientation.z = rot[2]#head_pose_quat[2]
-        # head_pose_target.orientation.w = rot[3]#head_pose_quat[3]
-        head_pose_target.orientation.x = head_pose_quat[0]
-        head_pose_target.orientation.y = head_pose_quat[1]
-        head_pose_target.orientation.z = head_pose_quat[2]
-        head_pose_target.orientation.w = head_pose_quat[3]
+
+        # dummy position (not used in the head control, but it is required by the Pose message type)
         head_pose_target.position.x = 0
         head_pose_target.position.y = 0
         head_pose_target.position.z = 0
 
+        # set the target orientation
+        head_pose_target.orientation.x = head_pose_quat[0]
+        head_pose_target.orientation.y = head_pose_quat[1]
+        head_pose_target.orientation.z = head_pose_quat[2]
+        head_pose_target.orientation.w = head_pose_quat[3]
 
-        #= Pose(0, 0, 0, head_pose_quat[0], head_pose_quat[1], head_pose_quat[2], head_pose_quat[3])# Pose(trans, head_pose_quat)
-        #Pose(0, 0, 0, head_pose_quat[0], head_pose_quat[1], head_pose_quat[2], head_pose_quat[3])
 
-        #head_pose = Quaternion(error_x, error_y, 0, 0)
-        ############################################
-
-        # # Publish the head pose
+        # (3) publish the target pose
         #pub.publish(head_pose_target)
 
         rate.sleep()
